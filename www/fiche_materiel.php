@@ -312,7 +312,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padd
                         <option value="v5">AgOpenGPS v5.x</option>
                         <option value="v6">AgOpenGPS v6.x</option>
                     </select>
-
+                    <label style="font-size: 12px; font-weight: bold;">Nom de la config :</label>
+                    <input type="text" name="titre_config" placeholder="Nom de la config (ex: Tracteur + semoir)" required style="margin-bottom:10px;">
                     <label style="font-size: 12px; font-weight: bold;">Fichier XML :</label>
                     <input type="file" name="xml_file" accept=".xml" required>
             
@@ -320,33 +321,51 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padd
                 </form>
             </div>
 
-            <div class="section" style="margin-top:0;">
-                <h4>📂 Historique des Configs AOG</h4>
-                <?php
-                // On récupère les fichiers XML déjà envoyés pour cette machine
-                // Note : Il faudra créer la table 'gps_configs' en base de données
-                $stmt_configs = $pdo->prepare("SELECT * FROM aog_configs WHERE materiel_id = ? ORDER BY date_import DESC");
-                $stmt_configs->execute([$id_machine]);
-                $configs = $stmt_configs->fetchAll();
-                ?>
+            <div class="section">
+                <h3>📂 Historique Configs AOG</h3>
+                <form action="comparer_configs.php" method="GET">
+                    <input type="hidden" name="id_machine" value="<?= $id_machine ?>">
+                    
+                    <?php
+                    $stmt_configs = $pdo->prepare("SELECT id, titre_config, date_import, version_aog FROM aog_configs WHERE materiel_id = ? ORDER BY date_import DESC");
+                    $stmt_configs->execute([$id_machine]);
+                    $configs = $stmt_configs->fetchAll();
+                    ?>
 
-                <?php if (empty($configs)): ?>
-                    <p style="font-size: 13px; color: #777; text-align: center; margin-top: 20px;">Aucun fichier importé.</p>
-                <?php else: ?>
-                    <table style="font-size: 13px;">
-                        <?php foreach ($configs as $conf): ?>
-                            <tr>
-                                <td>📅 <?= date('d/m/y', strtotime($conf['date_import'])) ?></td>
-                                <td>v.<?= htmlspecialchars($conf['version_aog']) ?></td>
-                                <td style="text-align: right;">
-                                    <a href="voir_config_aog.php?id=<?= $conf['id'] ?>" style="text-decoration: none; color: #6f42c1; font-weight: bold;">
-                                        👁️ Voir
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </table>
-                <?php endif; ?>
+                    <?php if (empty($configs)): ?>
+                        <p style="font-size:12px; color:#777;">Aucun import.</p>
+                    <?php else: ?>
+                        <table style="width:100%; font-size:12px;">
+                            <thead>
+                                <tr>
+                                    <th>Sel.</th>
+                                    <th>Titre / Date</th>
+                                    <th style="text-align:right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($configs as $conf): ?>
+                                <tr>
+                                    <td style="width:20px;">
+                                        <input type="checkbox" name="ids[]" value="<?= $conf['id'] ?>">
+                                    </td>
+                                    <td>
+                                        <strong><?= htmlspecialchars($conf['titre_config'] ?? 'Config sans nom') ?></strong><br>
+                                        <span style="color:#888; font-size:10px;"><?= date('d/m/y H:i', strtotime($conf['date_import'])) ?> (v.<?= htmlspecialchars($conf['version_aog']) ?>)</span>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a href="voir_config_aog.php?id=<?= $conf['id'] ?>" style="color:#6f42c1; font-weight:bold; text-decoration:none;">👁️ Voir</a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                        
+                        <button type="submit" class="btn" style="background:#6f42c1; color:white; width:100%; margin-top:10px; font-size:12px;">
+                            ⚖️ Comparer les 2 sélectionnés
+                        </button>
+                    <?php endif; ?>
+                </form>
             </div>
         </div>
     </div>
@@ -366,3 +385,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padd
     <?php include 'footer.php'; ?>
 </body>
 </html>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[name="ids[]"]');
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            const checked = document.querySelectorAll('input[name="ids[]"]:checked');
+            if (checked.length > 2) {
+                cb.checked = false;
+                alert("Sélectionnez seulement 2 configurations pour comparer.");
+            }
+        });
+    });
+</script>

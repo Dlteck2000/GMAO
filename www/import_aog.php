@@ -13,6 +13,7 @@ if (!isset($_SESSION['entreprise_id'])) {
 $sql_table = "CREATE TABLE IF NOT EXISTS aog_configs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     materiel_id INTEGER NOT NULL,
+    titre_config TEXT,
     version_aog TEXT,
     donnees_json TEXT,
     date_import DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -25,6 +26,7 @@ $pdo->exec($sql_table);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['xml_file'])) {
     $id_machine = intval($_POST['id_machine']);
     $version_aog = $_POST['aog_version'];
+    $titre_config = isset($_POST['titre_config']) ? $_POST['titre_config'] : 'Sans titre';
     $file = $_FILES['xml_file'];
 
     // Vérification basique du fichier
@@ -70,8 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['xml_file'])) {
     if (!empty($extracted_data)) {
         $json = json_encode($extracted_data);
         
-        $stmt = $pdo->prepare("INSERT INTO aog_configs (materiel_id, version_aog, donnees_json) VALUES (?, ?, ?)");
-        $stmt->execute([$id_machine, $version_aog, $json]);
+        $stmt = $pdo->prepare("INSERT INTO aog_configs (materiel_id, titre_config, version_aog, donnees_json) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$id_machine, $titre_config, $version_aog, $json]);
 
         header("Location: fiche_materiel.php?id=$id_machine&success=aog_ok");
     } else {
