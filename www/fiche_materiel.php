@@ -223,8 +223,6 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padd
 						</tr>
 					</table>
 				</div>
-				
-
 			</div>
 		</div>
 
@@ -253,69 +251,118 @@ body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padd
 
 			</div>
 		</div>
-    <div class="section" style="margin-top:20px;">
-        <h3>📜 Historique des interventions</h3>
-        <table class="table-mobile">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Compteur</th>
-                    <th>Technicien</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while($i = $interventions->fetch()): ?>
-                <tr>
-                    <td data-label="Date"><?= date('d/m/Y', strtotime($i['date_intervention'] ?? 'now')) ?></td>
-                    <td data-label="Compteur"><?= htmlspecialchars($i['relevé_compteur'] ?? '0') ?> h</td>
-                    <td data-label="Technicien"><?= htmlspecialchars($i['nom_technicien'] ?? 'Inconnu') ?></td>
-                    <td data-label="Description">
-                        <?= nl2br(htmlspecialchars($i['description'] ?? '')) ?>
-                        <?php if (!empty($i['facture_pdf'])): ?>
-                            <br><a href="uploads/factures/<?= htmlspecialchars($i['facture_pdf']) ?>" target="_blank" style="font-size:11px; color:#6f42c1; font-weight: bold;">📄 Voir Facture</a>
-                        <?php endif; ?>
-                    </td>
-<td style="text-align:right; white-space:nowrap;">
-    <a href="modifier_intervention.php?id=<?= $i['id'] ?>" 
-       style="text-decoration:none; margin-right:10px; padding: 5px 10px; border: 1px solid #cbd5e0; border-radius: 6px; background: #fff; color: #4a5568; font-size: 14px;" 
-       title="Modifier">✏️ Modifier</a>
 
-    <form method="GET" style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #feb2b2; background: #fff5f5; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;">
-        
-        <input type="hidden" name="id" value="<?= $id_machine ?>">
-        <input type="hidden" name="suppr_inter" value="<?= $i['id'] ?>">
-        
-        <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
-            <input type="checkbox" name="confirm_inter" required style="width:14px; height:14px; cursor: pointer;">
-        </label>
-        
-        <button type="submit" style="background:none; border:none; cursor:pointer; padding:0; color: #c53030; font-weight: bold; font-size: 12px; font-family: inherit;">
-            🗑️ Supprimer
-        </button>
-    </form>
-</td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
+        <div class="section" style="margin-top:20px;">
+            <h3>📜 Historique des interventions</h3>
+            <table class="table-mobile">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Compteur</th>
+                        <th>Technicien</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while($i = $interventions->fetch()): ?>
+                    <tr>
+                        <td data-label="Date"><?= date('d/m/Y', strtotime($i['date_intervention'] ?? 'now')) ?></td>
+                        <td data-label="Compteur"><?= htmlspecialchars($i['relevé_compteur'] ?? '0') ?> h</td>
+                        <td data-label="Technicien"><?= htmlspecialchars($i['nom_technicien'] ?? 'Inconnu') ?></td>
+                        <td data-label="Description">
+                            <?= nl2br(htmlspecialchars($i['description'] ?? '')) ?>
+                            <?php if (!empty($i['facture_pdf'])): ?>
+                                <br><a href="uploads/factures/<?= htmlspecialchars($i['facture_pdf']) ?>" target="_blank" style="font-size:11px; color:#6f42c1; font-weight: bold;">📄 Voir Facture</a>
+                            <?php endif; ?>
+                        </td>
+                        <td style="text-align:right; white-space:nowrap;">
+                            <a href="modifier_intervention.php?id=<?= $i['id'] ?>" 
+                            style="text-decoration:none; margin-right:10px; padding: 5px 10px; border: 1px solid #cbd5e0; border-radius: 6px; background: #fff; color: #4a5568; font-size: 14px;" 
+                            title="Modifier">✏️ Modifier</a>
+
+                            <form method="GET" style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #feb2b2; background: #fff5f5; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s;">
+                                
+                                <input type="hidden" name="id" value="<?= $id_machine ?>">
+                                <input type="hidden" name="suppr_inter" value="<?= $i['id'] ?>">
+                                
+                                <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                                    <input type="checkbox" name="confirm_inter" required style="width:14px; height:14px; cursor: pointer;">
+                                </label>
+                                
+                                <button type="submit" style="background:none; border:none; cursor:pointer; padding:0; color: #c53030; font-weight: bold; font-size: 12px; font-family: inherit;">
+                                    🗑️ Supprimer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="grid" style="margin-top:20px;">
+            <div class="section" style="border-left: 5px solid #6f42c1; margin-top:0;">
+                <h4>🛰️ Importer Configuration AOG</h4>
+                <form method="POST" action="import_aog.php" enctype="multipart/form-data">
+                    <input type="hidden" name="id_machine" value="<?= $id_machine ?>">
+            
+                    <label for="aog_version" style="font-size: 12px; font-weight: bold;">Version du logiciel :</label>
+                    <select name="aog_version" id="aog_version" required style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                        <option value="v5">AgOpenGPS v5.x</option>
+                        <option value="v6">AgOpenGPS v6.x</option>
+                    </select>
+
+                    <label style="font-size: 12px; font-weight: bold;">Fichier XML :</label>
+                    <input type="file" name="xml_file" accept=".xml" required>
+            
+                    <button type="submit" class="btn" style="background: #6f42c1; color: white; width: 100%; margin-top:10px;">Lancer l'import</button>
+                </form>
+            </div>
+
+            <div class="section" style="margin-top:0;">
+                <h4>📂 Historique des Configs AOG</h4>
+                <?php
+                // On récupère les fichiers XML déjà envoyés pour cette machine
+                // Note : Il faudra créer la table 'gps_configs' en base de données
+                $stmt_configs = $pdo->prepare("SELECT * FROM aog_configs WHERE materiel_id = ? ORDER BY date_import DESC");
+                $stmt_configs->execute([$id_machine]);
+                $configs = $stmt_configs->fetchAll();
+                ?>
+
+                <?php if (empty($configs)): ?>
+                    <p style="font-size: 13px; color: #777; text-align: center; margin-top: 20px;">Aucun fichier importé.</p>
+                <?php else: ?>
+                    <table style="font-size: 13px;">
+                        <?php foreach ($configs as $conf): ?>
+                            <tr>
+                                <td>📅 <?= date('d/m/y', strtotime($conf['date_import'])) ?></td>
+                                <td>v.<?= htmlspecialchars($conf['version_aog']) ?></td>
+                                <td style="text-align: right;">
+                                    <a href="voir_config_aog.php?id=<?= $conf['id'] ?>" style="text-decoration: none; color: #6f42c1; font-weight: bold;">
+                                        👁️ Voir
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
-
-</div>
-
-<div style="margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px;">
-<form method="POST" style="background: #fff5f5; padding: 15px; border: 1px solid #feb2b2; border-radius: 8px;">
-    <label style="display: flex; align-items: center; gap: 10px; color: #c53030; font-size: 14px; cursor: pointer;">
-        <input type="checkbox" name="confirm_delete" required> 
-        Je confirme vouloir supprimer tout l'historique de cette machine.
-    </label>
-    <br>
-    <button type="submit" name="supprimer_materiel" style="background:#dc3545; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; width:100%;">
-        Confirmer la suppression
-    </button>
-</form>
-</div>
-<?php include 'footer.php'; ?>
+    
+    <div style="margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px;">
+        <form method="POST" style="background: #fff5f5; padding: 15px; border: 1px solid #feb2b2; border-radius: 8px;">
+            <label style="display: flex; align-items: center; gap: 10px; color: #c53030; font-size: 14px; cursor: pointer;">
+                <input type="checkbox" name="confirm_delete" required> 
+                Je confirme vouloir supprimer tout l'historique de cette machine.
+            </label>
+            <br>
+            <button type="submit" name="supprimer_materiel" style="background:#dc3545; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; width:100%;">
+                Confirmer la suppression
+            </button>
+        </form>
+    </div>
+    <?php include 'footer.php'; ?>
 </body>
 </html>
