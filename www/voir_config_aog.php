@@ -23,15 +23,15 @@ $donnees = json_decode($config['donnees_json'], true);
 
 // Dictionnaire pour rendre les noms plus lisibles (Optionnel)
 $labels = [
-    'purePursuitIntegralGainAB'         => 'Gain Intégral Pure Pursuit (AB)',
-    'setVehicle_goalPointLookAheadHold' => 'Look Ahead Hold (Point cible)',
-    'setAS_wasOffset'                   => 'Offset WAS (Capteur angle)',
-    'setAS_countsPerDegree'             => 'Counts par Degré',
-    'setAS_ackerman'                    => 'Réglage Ackerman (%)',
+    'purePursuitIntegralGainAB'         => 'Pure Pursuite - Integral',
+    'setVehicle_goalPointLookAheadHold' => 'Pure Pursuite - Réponse',
+    'setAS_wasOffset'                   => 'Offset WAS Zero (Capteur angle)',
+    'setAS_countsPerDegree'             => 'Counts par Degrés',
+    'setAS_ackerman'                    => 'Ackerman',
     'setVehicle_maxSteerAngle'          => 'Angle de braquage max',
     'setAS_Kp'                          => 'Gain Proportionnel (Kp)',
-    'setAS_highSteerPWM'                => 'PWM Braquage Max',
-    'setAS_minSteerPWM'                 => 'PWM Braquage Min'
+    'setAS_highSteerPWM'                => 'Limite maximale (PWM Braquage Max)',
+    'setAS_minSteerPWM'                 => 'Min. pour tourner (PWM Braquage Min)'
 ];
 ?>
 
